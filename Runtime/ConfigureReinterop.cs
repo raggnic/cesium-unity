@@ -514,6 +514,18 @@ namespace CesiumForUnity
             tile._transform = new double4x4();
             tile._pTile = IntPtr.Zero;
 
+
+            Cesium3DTileRegion tileRegion = new Cesium3DTileRegion();
+            tileRegion._west=0;
+            tileRegion._south=0;
+            tileRegion._east=0;
+            tileRegion._north=0;
+            tileRegion._minHeight=0;
+            tileRegion._maxHeight=0;
+            tileRegion.SetRegion(0,0,0,0,0,0);
+            go.AddComponent<Cesium3DTileRegion>();
+
+
             Cesium3DTileInfo info;
             info.usesAdditiveRefinement = true;
             info.geometricError = 1.0f;

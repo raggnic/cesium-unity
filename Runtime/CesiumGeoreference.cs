@@ -106,6 +106,8 @@ namespace CesiumForUnity
         [NonSerialized]
         private HashSet<CesiumGlobeAnchor> _globeAnchors = new HashSet<CesiumGlobeAnchor>();
 
+        [SerializeField] public double CurrentMinHeight;
+
         #endregion
 
         /// <summary>
@@ -386,13 +388,21 @@ namespace CesiumForUnity
                 // Origin didn't change meaningfully.
                 return;
             }
+            
+//            Debug.Log("MoveOrigin");
 
+            CurrentMinHeight = 0; 
+            
             foreach (CesiumGlobeAnchor anchor in this._globeAnchors)
             {
                 if (anchor == null)
                     continue;
 
                 anchor.Sync();
+                
+//                Debug.Log("height " + anchor.longitudeLatitudeHeight.z, anchor.gameObject);
+                if (anchor.gameObject.layer==8 &&  CurrentMinHeight < anchor.longitudeLatitudeHeight.z)
+                     CurrentMinHeight = anchor.longitudeLatitudeHeight.z;
             }
 
             if (this.changed != null)

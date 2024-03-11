@@ -20,9 +20,12 @@
 #include <CesiumGltfReader/GltfReader.h>
 #include <CesiumShaderProperties.h>
 #include <CesiumUtility/ScopeGuard.h>
+#include <Cesium3DTilesContent/TileBoundingVolumes.h>
 
 #include <DotNet/CesiumForUnity/Cesium3DTileInfo.h>
 #include <DotNet/CesiumForUnity/Cesium3DTileset.h>
+#include <DotNet/CesiumForUnity/Cesium3DTileRegion.h>
+
 #include <DotNet/CesiumForUnity/CesiumFeatureIdAttribute.h>
 #include <DotNet/CesiumForUnity/CesiumFeatureIdSet.h>
 #include <DotNet/CesiumForUnity/CesiumGeoreference.h>
@@ -1431,6 +1434,34 @@ void* UnityPrepareRendererResources::prepareInMainThread(
         primitiveGameObject.transform().parent(pModelGameObject->transform());
         primitiveGameObject.layer(tilesetLayer);
         glm::dmat4 modelToEcef = tileTransform * transform;
+
+        CesiumForUnity::Cesium3DTileRegion tileRegion =
+            primitiveGameObject
+                    .AddComponent<CesiumForUnity::Cesium3DTileRegion>();
+
+        
+        //get boundingvolume  
+        const BoundingVolume& tileBoundingVolume = tile.getBoundingVolume();
+
+        
+        const CesiumGeospatial::BoundingRegion* pRegion =
+            getBoundingRegionFromBoundingVolume(tileBoundingVolume);
+
+        if (pRegion)
+        {
+          auto rect = pRegion->getRectangle();
+          tileRegion.SetRegion(
+              CesiumUtility::Math::radiansToDegrees(rect.getWest()),
+              CesiumUtility::Math::radiansToDegrees(rect.getSouth()),
+              CesiumUtility::Math::radiansToDegrees(rect.getEast()),
+              CesiumUtility::Math::radiansToDegrees(rect.getNorth()),
+              pRegion->getMinimumHeight(),
+              pRegion->getMaximumHeight());
+          
+            
+        }
+
+
 
         CesiumForUnity::CesiumGlobeAnchor anchor =
             primitiveGameObject
